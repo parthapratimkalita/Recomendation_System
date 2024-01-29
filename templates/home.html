@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Home Page</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+</head>
+
+<body>
+    
+    <div class="top-bar">
+        <div style="margin-left: auto;">
+            <button id="notificationButton"><img src="{{ url_for('static', filename='notifi_bell.png') }}" alt="Notifications"></button>
+            
+            
+            <button id = "profileButton" ><img src="{{ url_for('static', filename='profile.png') }}" alt="Profile"></button>
+            
+        </div>
+    </div>
+    <div id="notificationDropdown" class="dropdown">
+        <p id="notificationMessage"></p>
+    </div>
+    <div id="notificationDropdown" class="dropdown1">
+        
+    </div>
+    <div class="left-menu">
+        <a class="menu-button" href="#home">Home</a>
+        <a class="menu-button" href="#news">News</a>
+        <a class="menu-button" href="#contact">Contact</a>
+    </div>
+    <div class="content">
+
+        <table id="jsonTable">
+            <thead>
+                <tr>
+                    <th>Movie Id</th>
+                    <th>Title</th>
+                    <th>Genres</th>
+                    <th>Total reviews</th>
+                    <th>Average rating</th>
+                    <th>Overall Score</th>
+                    <!-- Add more column headers as needed -->
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Rows will be added here by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+    <div class="bottom-bar">
+        <!-- Your bottom bar content goes here -->
+    </div>
+
+    <script src="{{ url_for('static', filename='table.js') }}"></script>
+    <script>
+        
+        document.getElementById('notificationButton').onclick = function() {
+
+            // Hide the profile dropdown
+            var profileDropdown = document.getElementById('profileDropdown');
+            if (profileDropdown) {
+                profileDropdown.style.display = 'none';
+            }
+            
+            var dropdown = document.getElementById('notificationDropdown');
+            if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+                dropdown.style.display = 'block';
+                fetch('/notification')
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('notificationMessage').textContent = data.notification;
+                    });
+            } else {
+                dropdown.style.display = 'none';
+            }
+        };
+    </script>
+    <script>
+        document.getElementById('profileButton').onclick = function() {
+            // Hide the notification dropdown
+            var notificationDropdown = document.getElementById('notificationDropdown');
+            if (notificationDropdown) {
+                notificationDropdown.style.display = 'none';
+            }
+
+
+
+            var dropdown = document.getElementById('profileDropdown');
+            if (!dropdown) {
+                dropdown = document.createElement('div');
+                dropdown.id = 'profileDropdown';
+                dropdown.className = 'dropdown1';  // Add this if you want to style the dropdown
+                dropdown.style.display = 'none';
+                document.body.appendChild(dropdown);
+            }
+            if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+                dropdown.style.display = 'block';
+                fetch('/profile')
+                    .then(response => response.json())
+                    .then(data => {
+                        // Clear the dropdown
+                        dropdown.innerHTML = '';
+    
+                        if (data) {
+                            // Add the user information to the dropdown
+                            for (var key in data) {
+                                var item = document.createElement('p');
+                                item.textContent = key + ': ' + data[key];
+                                dropdown.appendChild(item);
+                            }
+    
+                            // Add the logout button
+                            var logoutButton = document.createElement('button');
+                            logoutButton.textContent = 'Logout';
+                            dropdown.appendChild(logoutButton);
+                            logoutButton.onclick = function() {
+                                window.location.href = '/logout';
+
+                                // Clear the dropdown
+                                dropdown.innerHTML = '';
+
+                                // Add the login button
+                                var loginButton = document.createElement('button');
+                                loginButton.textContent = 'Login';
+                                loginButton.onclick = function() {
+                                    window.location.href = '/login';
+                                };
+                                var registerButton = document.createElement('button');
+                                registerButton.textContent = 'Register';
+                                registerButton.onclick = function() {
+                                    window.location.href = '/register';
+                                };
+                                dropdown.appendChild(loginButton);
+                                dropdown.appendChild(registerButton);
+                            };
+                        
+                        } else {
+                            // Add the login button
+                            var loginButton = document.createElement('button');
+                            loginButton.textContent = 'Login';
+                            loginButton.onclick = function() {
+                                window.location.href = '/login';
+                            };
+                            var registerButton = document.createElement('button');
+                            registerButton.textContent = 'Register';
+                            registerButton.onclick = function() {
+                                window.location.href = '/register';
+                            };
+                            dropdown.appendChild(loginButton);
+                            dropdown.appendChild(registerButton);
+                        }
+                    });
+            } else {
+                dropdown.style.display = 'none';
+            }
+        };
+    </script>
+    
+
+
+</body>
+</html>

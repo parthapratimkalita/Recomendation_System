@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Profile Dropdown</title>
+    <style>
+        #profileDropdown {
+            position: absolute;
+            right: 0;
+            background-color: #f9f9f9;
+            min-width: 160px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+            padding: 12px 16px;
+            display: none;
+        }
+
+        #profileDropdown p {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        #profileDropdown button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+        }
+
+        #profileDropdown button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <button id="profileButton">Profile</button>
+    <div id="profileDropdown" style="display: none;"></div>
+    <script>
+        document.getElementById('profileButton').onclick = function() {
+            var dropdown = document.getElementById('profileDropdown');
+            if (dropdown.style.display === 'none' || dropdown.style.display === '') {
+                dropdown.style.display = 'block';
+                fetch('/profile')
+                    .then(response => response.json())
+                    .then(data => {
+                        // Clear the dropdown
+                        dropdown.innerHTML = '';
+    
+                        if (data) {
+                            // Add the user information to the dropdown
+                            for (var key in data) {
+                                var item = document.createElement('p');
+                                item.textContent = key + ': ' + data[key];
+                                dropdown.appendChild(item);
+                            }
+                        } else {
+                            // Add the login button
+                            var loginButton = document.createElement('button');
+                            loginButton.textContent = 'Login';
+                            loginButton.onclick = function() {
+                                window.location.href = '/login';
+                            };
+                            dropdown.appendChild(loginButton);
+                        }
+                    });
+            } else {
+                dropdown.style.display = 'none';
+            }
+        };
+    </script>
+</body>
+</html>
